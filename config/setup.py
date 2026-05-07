@@ -1,9 +1,12 @@
-"""Script to set up .env file"""
+"""Script to set up the .env file and create the database."""
 
 import os
 from dotenv import load_dotenv, set_key
+from flask import Flask
+
 from config import (API_ENV_KEY, API_URL, DB_ENV_KEY, DEFAULT_DBPATH,
-                    ENV_FILE)
+                    ENV_FILE, get_db_path)
+from models import db
 
 
 ENV_KEYS = [API_ENV_KEY, DB_ENV_KEY]
@@ -44,5 +47,19 @@ def setup_env():
     print("Finished setup.")
 
 
+def setup_db():
+    """Create the database tables defined in ``models``.
+
+    Idempotent: tables that already exist are left untouched.
+    """
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{get_db_path()}"
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+    print("Database is ready.")
+
+
 if __name__ == "__main__":
     setup_env()
+    setup_db()
