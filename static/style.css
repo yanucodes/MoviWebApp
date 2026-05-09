@@ -55,13 +55,10 @@ body {
     background-color: #FFF;
     border: 1px solid #009B50;
     padding: 20px;
+    margin-top: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
     position: relative;
-}
-
-.user-box {
-    margin-top: 0;
 }
 
 .user-box p {
