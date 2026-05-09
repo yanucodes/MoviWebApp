@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, render_template
 from data_manager import DataManager
 from models import db, Movie, User
 from config import get_db_path
@@ -12,7 +12,8 @@ data_manager = DataManager()
 
 @app.route('/')
 def list_users():
-    return 'Welcome to MoviWeb App!'
+    users = data_manager.get_users()
+    return render_template('index.html', users=users)
 
 
 @app.route('/users', methods=['POST'])
