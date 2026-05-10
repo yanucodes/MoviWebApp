@@ -6,15 +6,19 @@ from models import db, User, Movie, Favorite
 class DataManager:
     """CRUD operations for users, movies, and favorites."""
 
-    def add_user(self, name: str):
+    def add_user(self, name: str) -> User:
         """Insert a new user with the given display name.
 
         Args:
             name: User's name.
+
+        Returns:
+            The newly created ``User``.
         """
         new_user = User(name=name)
         db.session.add(new_user)
         db.session.commit()
+        return new_user
 
     def get_users(self):
         """Return all users in the database."""
@@ -48,7 +52,7 @@ class DataManager:
         db.session.commit()
 
     def add_movie(self, title: str, director: str, year: int,
-                  imdb_rating: float, poster_url: str):
+                  imdb_rating: float, poster_url: str) -> Movie:
         """Insert a new movie into the catalog.
 
         Args:
@@ -57,11 +61,15 @@ class DataManager:
             year: Release year.
             imdb_rating: Official IMDb rating, 0.0–10.0 (one decimal place).
             poster_url: URL to the poster image.
+
+        Returns:
+            The newly created ``Movie``.
         """
         new_movie = Movie(title=title, director=director, year=year,
                           imdb_rating=imdb_rating, poster_url=poster_url)
         db.session.add(new_movie)
         db.session.commit()
+        return new_movie
 
     def get_movies(self):
         """Return all movies in the catalog."""
@@ -91,17 +99,22 @@ class DataManager:
         db.session.delete(movie)
         db.session.commit()
 
-    def add_favorite(self, user_id: int, movie_id: int, rating: int = None):
+    def add_favorite(self, user_id: int, movie_id: int,
+                     rating: int = None) -> Favorite:
         """Link a user to a movie they have added as their favorite.
 
         Args:
             user_id: ID of the user.
             movie_id: ID of the movie.
             rating: User's personal rating for the movie.
+
+        Returns:
+            The newly created ``Favorite`` link row.
         """
         favorite = Favorite(user_id=user_id, movie_id=movie_id, rating=rating)
         db.session.add(favorite)
         db.session.commit()
+        return favorite
 
     def get_users_favorite_movies(self, user_id: int) -> list:
         """Return the list of ``Movie`` objects a user has added as their
