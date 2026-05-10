@@ -138,5 +138,16 @@ def add_movie_manually(user_id):
     return redirect(url_for('list_users_movies', user_id=user_id))
 
 
+@app.route('/users/<int:user_id>/movies/<int:movie_id>', methods=['POST'])
+def add_existing_movie(user_id, movie_id):
+    try:
+        rating = get_num_in_range(request.form.get('rating', ''),
+                                  LOWEST_RATING, HIGHEST_RATING, 'rating')
+    except ValueError:
+        return "Bad rating", 400
+    data_manager.add_favorite(user_id, movie_id, rating)
+    return redirect(url_for('list_users_movies', user_id=user_id))
+
+
 if __name__ == '__main__':
     app.run()

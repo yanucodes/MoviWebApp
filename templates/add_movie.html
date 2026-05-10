@@ -34,7 +34,8 @@
     <ol class="movie-grid">
         {% for movie in movies %}
         <li>
-        <div class="movie">
+        <div class="movie" style="cursor: pointer;"
+             onclick="pickMovie({{ user.user_id }}, {{ movie.movie_id }})">
             <img class="movie-poster" src="{{ movie.poster_url }}" alt="Poster"/>
             <div class="movie-title"> {{ movie.title }}</div>
             <div class="movie-year"> {{ movie.year }}</div>
@@ -43,5 +44,21 @@
         {% endfor %}
     </ol>
 </div>
+<script>
+function pickMovie(userId, movieId) {
+    var rating = prompt("Your rating (optional, leave blank to skip):", "");
+    if (rating === null) return;
+    var form = document.createElement("form");
+    form.method = "post";
+    form.action = "/users/" + userId + "/movies/" + movieId;
+    var input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "rating";
+    input.value = rating.trim();
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
 </body>
 </html>
