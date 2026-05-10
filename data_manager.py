@@ -75,6 +75,10 @@ class DataManager:
         """Return all movies in the catalog."""
         return Movie.query.all()
 
+    def get_movie(self, movie_id: int):
+        """Return movie by given ID."""
+        return db.session.get(Movie, movie_id)
+
     def update_movie_title(self, movie_id: int, new_title: str):
         """Change the title of an existing movie.
 
@@ -125,6 +129,12 @@ class DataManager:
         """
         favorites = Favorite.query.filter_by(user_id=user_id).all()
         return [favorite.movie for favorite in favorites]
+
+    def get_favorite_rating(self, user_id: int, movie_id: int):
+        """Return user's personal rating for a movie selected by user's and
+        movies's ID."""
+        favorite = db.session.get(Favorite, (user_id, movie_id))
+        return favorite.rating
 
     def update_favorite_rating(self, user_id: int, movie_id: int,
                                new_rating: int):

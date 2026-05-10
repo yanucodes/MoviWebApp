@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoviWebApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="list-movies-title">
+    <h1>{{ user.name }}'s favorite movies</h1>
+</div>
+<div class="card" style="margin-bottom: 0;">
+    <h2>{{ movie.title }}</h2>
+    {% if movie.poster_url %}
+    <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
+    {% endif %}
+    {% if movie.director %}
+    <p><strong>Director:</strong> {{ movie.director }}</p>
+    {% endif %}
+    {% if movie.year is not none %}
+    <p><strong>Year:</strong> {{ movie.year }}</p>
+    {% endif %}
+    {% if movie.imdb_rating is not none %}
+    <p><strong>IMDb rating:</strong> {{ movie.imdb_rating }}</p>
+    {% endif %}
+    {% if rating is not none %}
+    <p><strong>You rated this movie:</strong> {{ rating }}</p>
+    {% endif %}
+    {% if movie.average_rating is not none %}
+    <p><strong>Average rating among MoviWebApp users:</strong> {{ "%.1f"|format(movie.average_rating) }}</p>
+    {% endif %}
+</div>
+</body>
+</html>

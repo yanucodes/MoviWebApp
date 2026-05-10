@@ -14,11 +14,14 @@
     <ol class="movie-grid">
         {% for movie in movies %}
         <li>
-        <div class="movie">
-            <img class="movie-poster" src="{{ movie.poster_url }}" alt="Poster"/>
-            <div class="movie-title"> {{ movie.title }}</div>
-            <div class="movie-year"> {{ movie.year }}</div>
-        </div>
+        <a href="{{ url_for('show_movie_details', user_id=user.user_id, movie_id=movie.movie_id) }}"
+           style="text-decoration: none; color: inherit;">
+            <div class="movie">
+                <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
+                <div class="movie-title"> {{ movie.title }}</div>
+                <div class="movie-year"> {{ movie.year }}</div>
+            </div>
+        </a>
 		</li>
         {% endfor %}
     </ol>

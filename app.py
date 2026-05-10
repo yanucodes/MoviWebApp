@@ -149,5 +149,13 @@ def add_existing_movie(user_id, movie_id):
     return redirect(url_for('list_users_movies', user_id=user_id))
 
 
+@app.route('/users/<int:user_id>/movies/<int:movie_id>', methods=['GET'])
+def show_movie_details(user_id, movie_id):
+    user = data_manager.get_user(user_id)
+    movie = data_manager.get_movie(movie_id)
+    rating = data_manager.get_favorite_rating(user_id, movie_id)
+    return render_template('movie.html', user=user, movie=movie, rating=rating)
+
+
 if __name__ == '__main__':
     app.run()
