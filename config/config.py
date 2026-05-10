@@ -6,7 +6,7 @@ from dotenv import load_dotenv, set_key
 
 
 # Global configuration
-ROUND_NDIGITS = 1
+RATING_STEP = 0.1
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_FILE = os.path.join(PROJECT_ROOT, ".env")
 DEFAULT_DBNAME = "MoviWeb.db"
