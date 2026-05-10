@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoviWebAgg</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="list-movies-title">
+    <h1>{{ user.name }}'s favorite movies</h1>
+</div>
+<div class="card" style="margin-bottom: 0;">
+        <h2>Search for movie data was unsuccessful. Add new movie manually
+            or select an existing one below:</h2>
+        <form action="{{ url_for('add_movie_manually', user_id=user.user_id) }}" method="post">
+        <div>
+          <label for="title"><strong>Title:</strong></label>
+          <input type="text" id="title" name="title" required>
+          <label for="director"><strong>Director:</strong></label>
+          <input type="text" id="director" name="director">
+          <label for="year"><strong>Year:</strong></label>
+          <input type="number" id="year" name="year" min="{{ year_min }}" max="{{ year_max }}" step="1">
+          <label for="imdb_rating"><strong>IMDb rating:</strong></label>
+          <input type="number" id="imdb_rating" name="imdb_rating" min="{{ lowest_rating }}" max="{{ highest_rating }}" step="{{ rating_step }}">
+          <label for="poster_url"><strong>Poster URL:</strong></label>
+          <input type="url" id="poster_url" name="poster_url">
+          <label for="rating"><strong>Your rating:</strong></label>
+          <input type="number" id="rating" name="rating" min="{{ lowest_rating }}" max="{{ highest_rating }}" step="{{ rating_step }}">
+        </div>
+        <input type="submit" value="Submit">
+</div>
+<div>
+    <ol class="movie-grid">
+        {% for movie in movies %}
+        <li>
+        <div class="movie">
+            <img class="movie-poster" src="{{ movie.poster_url }}" alt="Poster"/>
+            <div class="movie-title"> {{ movie.title }}</div>
+            <div class="movie-year"> {{ movie.year }}</div>
+        </div>
+		</li>
+        {% endfor %}
+    </ol>
+</div>
+</body>
+</html>
