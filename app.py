@@ -1,4 +1,6 @@
+import sys
 from flask import Flask, request, redirect, url_for, render_template
+from api import fetch_data
 from data_manager import DataManager
 from models import db, Movie, User
 from config import get_db_path
@@ -28,6 +30,29 @@ def list_users_movies(user_id):
     user = data_manager.get_user(user_id)
     movies = data_manager.get_users_favorite_movies(user_id)
     return render_template('movies.html', user=user, movies=movies)
+
+
+@app.route('/users/<int:user_id>/movies', methods=['POST'])
+def add_movie_to_favorites(user_id):
+    title = request.form.get('title', '').strip()
+    if not title:
+        return "Bad request", 400
+    movie_data = fetch_data(title.strip())
+    if movie_data["Response"] == "True":
+        try:
+            new_title = movie_data["Title"]
+            director = movie_data["Director"]
+            year = int(movie_data["Year"])
+            imdb_rating = float(movie_data["imdbRating"])
+            poster_url = movie_data["Poster"]
+        except ValueError:
+            print(f"Failed to interpret data for the movie {title}.",
+                  file=sys.stderr)
+        else:
+            new_movie = data_manager.add_movie(new_title, director, year,
+                                               imdb_rating, poster_url)
+            data_manager.add_favorite(user_id, new_movie.movie_id)
+    return redirect(url_for('list_users_movies', user_id=user_id))
 
 
 if __name__ == '__main__':
