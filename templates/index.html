@@ -11,11 +11,11 @@
     <h1>"Welcome to MoviWebApp"</h1>
 </div>
 {% for user in users %}
-    <div class="card">
-        <div>
-        <h2><a href="{{ url_for('list_users_movies', user_id=user.user_id) }}">{{ user.name }}</a></h2>
+    <a href="{{ url_for('list_users_movies', user_id=user.user_id) }}" style="text-decoration: none; color: inherit;">
+        <div class="card">
+        <h2>{{ user.name }}</h2>
         </div>
-    </div>
+    </a>
     {% endfor %}
     <div class="card" style="margin-bottom: 0;">
         <h2>Add new user:</h2>
