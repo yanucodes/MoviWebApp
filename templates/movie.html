@@ -31,5 +31,11 @@
     <p><strong>Average rating among MoviWebApp users:</strong> {{ "%.1f"|format(movie.average_rating) }}</p>
     {% endif %}
 </div>
+<a href="{{ url_for('list_users_movies', user_id=user.user_id) }}"
+   style="text-decoration: none; color: inherit;">
+    <div class="card" style="margin-bottom: 0;">
+        <h2>Go back</h2>
+    </div>
+</a>
 </body>
 </html>
