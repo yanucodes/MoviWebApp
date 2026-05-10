@@ -79,6 +79,18 @@ body {
     right: 10px;
 }
 
+.top-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.top-buttons .button {
+    width: auto;
+    padding: 5px 15px;
+}
+
 .button {
     display: inline-block;
     box-sizing: border-box;

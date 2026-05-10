@@ -4,6 +4,11 @@
 <div class="list-movies-title">
     <h1>{{ user.name }}'s favorite movies</h1>
 </div>
+<div class="top-buttons">
+    <a href="{{ url_for('list_users') }}" class="button">Go back</a>
+    <a href="#add-movie" class="button">Add new movie</a>
+    <a href="{{ url_for('show_user_settings', user_id=user.user_id) }}" class="button">User's settings</a>
+</div>
 <div>
     <ol class="movie-grid">
         {% for movie in movies %}
@@ -20,7 +25,7 @@
         {% endfor %}
     </ol>
 </div>
-<div class="card">
+<div class="card" id="add-movie" style="margin-bottom: 0;">
     <h2>Add new movie:</h2>
     <form action="{{ url_for('add_movie_by_title', user_id=user.user_id) }}" method="post">
         <div>
@@ -32,9 +37,4 @@
         <input type="submit" value="Submit">
     </form>
 </div>
-<a href="{{ url_for('show_user_settings', user_id=user.user_id) }}" style="text-decoration: none; color: inherit;">
-    <div class="card" style="margin-bottom: 0;">
-        <h2>User's settings</h2>
-    </div>
-</a>
 {% endblock %}
