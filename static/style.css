@@ -51,7 +51,7 @@ body {
     height: 193px;
 }
 
-.user-box {
+.card {
     background-color: #FFF;
     border: 1px solid #009B50;
     padding: 20px;
@@ -61,13 +61,13 @@ body {
     position: relative;
 }
 
-.user-box p {
+.card p {
     margin: 10px 0;
 }
 
-.user-box form input:not([type="submit"]),
+.card form input:not([type="submit"]),
 
-.user-box form label {
+.card form label {
     display: block;
     margin-bottom: 7px;
     margin-top: 7px;

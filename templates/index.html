@@ -11,13 +11,13 @@
     <h1>"Welcome to MoviWebApp"</h1>
 </div>
 {% for user in users %}
-    <div class="user-box">
+    <div class="card">
         <div>
         <h2>{{ user.name }}</h2>
         </div>
     </div>
     {% endfor %}
-    <div class="user-box" style="margin-bottom: 0;">
+    <div class="card" style="margin-bottom: 0;">
         <h2>Add new user:</h2>
         <form action="{{ url_for('add_user') }}" method="post">
         <div>
