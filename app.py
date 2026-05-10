@@ -22,5 +22,13 @@ def add_user():
     data_manager.add_user(name)
     return redirect(url_for('list_users'))
 
+
+@app.route('/users/<int:user_id>/movies', methods=['GET'])
+def list_users_movies(user_id):
+    user = data_manager.get_user(user_id)
+    movies = data_manager.get_users_favorite_movies(user_id)
+    return render_template('movies.html', user=user, movies=movies)
+
+
 if __name__ == '__main__':
     app.run()

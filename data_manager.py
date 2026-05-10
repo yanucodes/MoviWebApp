@@ -20,6 +20,10 @@ class DataManager:
         """Return all users in the database."""
         return User.query.all()
 
+    def get_user(self, user_id: int):
+        """Return user by given ID."""
+        return db.session.get(User, user_id)
+
     def update_users_name(self, user_id: int, new_name: str):
         """Change the name of an existing user.
 
