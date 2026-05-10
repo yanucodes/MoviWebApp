@@ -25,7 +25,8 @@
 </div>
 <div class="card" style="margin-bottom: 0;">
         <h2>Add new movie:</h2>
-        <form action="{{ url_for('add_movie_to_favorites', user_id=user.user_id) }}" method="post">
+        <form action="{{ url_for('add_movie_by_title', user_id=user.user_id)
+                }}" method="post">
         <div>
           <label for="title"><strong>Title:</strong></label>
           <input type="text" id="title" name="title" required>
