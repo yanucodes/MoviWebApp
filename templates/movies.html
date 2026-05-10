@@ -20,7 +20,7 @@
         {% endfor %}
     </ol>
 </div>
-<div class="card" style="margin-bottom: 0;">
+<div class="card">
     <h2>Add new movie:</h2>
     <form action="{{ url_for('add_movie_by_title', user_id=user.user_id) }}" method="post">
         <div>
@@ -32,4 +32,9 @@
         <input type="submit" value="Submit">
     </form>
 </div>
+<a href="{{ url_for('show_user_settings', user_id=user.user_id) }}" style="text-decoration: none; color: inherit;">
+    <div class="card" style="margin-bottom: 0;">
+        <h2>User's settings</h2>
+    </div>
+</a>
 {% endblock %}

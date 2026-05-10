@@ -54,6 +54,25 @@ def add_user():
     return redirect(url_for('list_users'))
 
 
+@app.route('/users/<int:user_id>', methods=['GET'])
+def show_user_settings(user_id):
+    user = data_manager.get_user(user_id)
+    return render_template('user.html', user=user)
+
+
+@app.route('/users/<int:user_id>/update', methods=['POST'])
+def update_user(user_id):
+    new_name = request.form['name']
+    data_manager.update_users_name(user_id, new_name)
+    return redirect(url_for('show_user_settings', user_id=user_id))
+
+
+@app.route('/users/<int:user_id>/delete', methods=['POST'])
+def delete_user(user_id):
+    data_manager.delete_user(user_id)
+    return redirect(url_for('list_users'))
+
+
 @app.route('/users/<int:user_id>/movies', methods=['GET'])
 def list_users_movies(user_id):
     user = data_manager.get_user(user_id)

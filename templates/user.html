@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="list-movies-title">
+    <h1>{{ user.name }}'s settings</h1>
+</div>
+<div class="card" style="margin-bottom: 0;">
+    <h2>Change name:</h2>
+    <form action="{{ url_for('update_user', user_id=user.user_id) }}" method="post">
+        <div>
+            <label for="name"><strong>Name:</strong></label>
+            <input type="text" id="name" name="name" required value="{{ user.name }}">
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+    <div class="buttons">
+        <form action="{{ url_for('delete_user', user_id=user.user_id) }}" method="post">
+            <button type="submit" class="button">Delete account</button>
+        </form>
+    </div>
+</div>
+<a href="{{ url_for('list_users_movies', user_id=user.user_id) }}"
+   style="text-decoration: none; color: inherit;">
+    <div class="card" style="margin-bottom: 0;">
+        <h2>Go back</h2>
+    </div>
+</a>
+{% endblock %}
