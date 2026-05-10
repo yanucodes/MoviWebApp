@@ -154,7 +154,30 @@ def show_movie_details(user_id, movie_id):
     user = data_manager.get_user(user_id)
     movie = data_manager.get_movie(movie_id)
     rating = data_manager.get_favorite_rating(user_id, movie_id)
-    return render_template('movie.html', user=user, movie=movie, rating=rating)
+    return render_template('movie.html', user=user, movie=movie,
+                           rating=rating, update=False)
+
+
+@app.route('/users/<int:user_id>/movies/<int:movie_id>/update',
+           methods=['GET', 'POST'])
+def update_movie(user_id, movie_id):
+    if request.method == 'POST':
+        new_title = request.form['title']
+        data_manager.update_movie_title(movie_id, new_title)
+        return redirect(url_for('show_movie_details', user_id=user_id,
+                                movie_id=movie_id))
+    user = data_manager.get_user(user_id)
+    movie = data_manager.get_movie(movie_id)
+    rating = data_manager.get_favorite_rating(user_id, movie_id)
+    return render_template('movie.html', user=user, movie=movie,
+                           rating=rating, update=True)
+
+
+@app.route('/users/<int:user_id>/movies/<int:movie_id>/delete',
+           methods=['POST'])
+def delete_movie_from_favorites(user_id, movie_id):
+    data_manager.delete_favorite(user_id, movie_id)
+    return redirect(url_for('list_users_movies', user_id=user_id))
 
 
 if __name__ == '__main__':
