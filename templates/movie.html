@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoviWebApp</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
 <div class="list-movies-title">
     <h1>{{ user.name }}'s favorite movies</h1>
 </div>
@@ -14,11 +8,11 @@
     {% if update %}
         <form action="{{ url_for('update_movie', user_id=user.user_id, movie_id=movie.movie_id) }}"
               method="post">
-        <div>
-            <label for="title"><strong>Title:</strong></label>
-            <input type="text" id="title" name="title" required value="{{ movie.title }}">
-        </div>
-        <input type="submit" value="Submit">
+            <div>
+                <label for="title"><strong>Title:</strong></label>
+                <input type="text" id="title" name="title" required value="{{ movie.title }}">
+            </div>
+            <input type="submit" value="Submit">
         </form>
     {% else %}
         <h2>{{ movie.title }}</h2>
@@ -42,10 +36,10 @@
     <p><strong>Average rating among MoviWebApp users:</strong> {{ "%.1f"|format(movie.average_rating) }}</p>
     {% endif %}
     <div class="buttons">
-    <form action="{{ url_for('delete_movie_from_favorites', user_id=user.user_id, movie_id=movie.movie_id) }}" method="post">
-        <button type="submit" class="button">Delete</button>
-    </form>
-    <a href="{{ url_for('update_movie', user_id=user.user_id, movie_id=movie.movie_id) }}" class="button">Update</a>
+        <form action="{{ url_for('delete_movie_from_favorites', user_id=user.user_id, movie_id=movie.movie_id) }}" method="post">
+            <button type="submit" class="button">Delete</button>
+        </form>
+        <a href="{{ url_for('update_movie', user_id=user.user_id, movie_id=movie.movie_id) }}" class="button">Update</a>
     </div>
 </div>
 <a href="{{ url_for('list_users_movies', user_id=user.user_id) }}"
@@ -54,5 +48,4 @@
         <h2>Go back</h2>
     </div>
 </a>
-</body>
-</html>
+{% endblock %}

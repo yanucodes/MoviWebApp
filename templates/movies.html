@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoviWebAgg</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
 <div class="list-movies-title">
     <h1>{{ user.name }}'s favorite movies</h1>
 </div>
@@ -14,29 +8,28 @@
     <ol class="movie-grid">
         {% for movie in movies %}
         <li>
-        <a href="{{ url_for('show_movie_details', user_id=user.user_id, movie_id=movie.movie_id) }}"
-           style="text-decoration: none; color: inherit;">
-            <div class="movie">
-                <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
-                <div class="movie-title"> {{ movie.title }}</div>
-                <div class="movie-year"> {{ movie.year }}</div>
-            </div>
-        </a>
-		</li>
+            <a href="{{ url_for('show_movie_details', user_id=user.user_id, movie_id=movie.movie_id) }}"
+               style="text-decoration: none; color: inherit;">
+                <div class="movie">
+                    <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
+                    <div class="movie-title"> {{ movie.title }}</div>
+                    <div class="movie-year"> {{ movie.year }}</div>
+                </div>
+            </a>
+        </li>
         {% endfor %}
     </ol>
 </div>
 <div class="card" style="margin-bottom: 0;">
-        <h2>Add new movie:</h2>
-        <form action="{{ url_for('add_movie_by_title', user_id=user.user_id)
-                }}" method="post">
+    <h2>Add new movie:</h2>
+    <form action="{{ url_for('add_movie_by_title', user_id=user.user_id) }}" method="post">
         <div>
-          <label for="title"><strong>Title:</strong></label>
-          <input type="text" id="title" name="title" required>
-          <label for="rating"><strong>Your rating:</strong></label>
-          <input type="number" id="rating" name="rating" min="{{ lowest_rating }}" max="{{ highest_rating }}" step="{{ rating_step }}">
+            <label for="title"><strong>Title:</strong></label>
+            <input type="text" id="title" name="title" required>
+            <label for="rating"><strong>Your rating:</strong></label>
+            <input type="number" id="rating" name="rating" min="{{ lowest_rating }}" max="{{ highest_rating }}" step="{{ rating_step }}">
         </div>
         <input type="submit" value="Submit">
+    </form>
 </div>
-</body>
-</html>
+{% endblock %}
