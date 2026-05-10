@@ -13,7 +13,7 @@
 {% for user in users %}
     <div class="card">
         <div>
-        <h2>{{ user.name }}</h2>
+        <h2><a href="{{ url_for('list_users_movies', user_id=user.user_id) }}">{{ user.name }}</a></h2>
         </div>
     </div>
     {% endfor %}
