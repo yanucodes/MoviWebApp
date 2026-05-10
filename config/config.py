@@ -23,14 +23,6 @@ YEAR_MAX = datetime.now().year
 LOWEST_RATING = 0.0
 HIGHEST_RATING = 10.0
 
-# Configuration for web_generator.py
-HTML_TEMPLATE = "static/index_template.html"
-REPLACE_TITLE = "__TEMPLATE_TITLE__"
-REPLACE_GRID = "__TEMPLATE_MOVIE_GRID__"
-MOVIES_HTML_PATH = "movies.html"
-DEFAULT_TITLE = "My Movies"
-TABS_NUM = 2
-
 
 def get_api_key() -> str | None:
     """
