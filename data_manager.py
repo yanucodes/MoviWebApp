@@ -31,11 +31,15 @@ class DataManager:
     def update_users_name(self, user_id: int, new_name: str):
         """Change the name of an existing user.
 
+        Does nothing if no user with the given ID exists.
+
         Args:
             user_id: ID of the user.
             new_name: New name of the user.
         """
         user = db.session.get(User, user_id)
+        if user is None:
+            return
         user.name = new_name
         db.session.commit()
 
@@ -94,11 +98,15 @@ class DataManager:
     def update_movie_title(self, movie_id: int, new_title: str):
         """Change the title of an existing movie.
 
+        Does nothing if no movie with the given ID exists.
+
         Args:
             movie_id: ID of the movie.
             new_title: New title of the movie.
         """
         movie = db.session.get(Movie, movie_id)
+        if movie is None:
+            return
         movie.title = new_title
         db.session.commit()
 
