@@ -35,6 +35,10 @@ flask run
 
 Then open the URL shown in the terminal (by default http://127.0.0.1:5000).
 
+The repository ships with an example database at `data/MoviWeb.db` so
+the app has some users and movies to browse on first start. Leave the
+database path blank during setup to use it.
+
 From the web interface you can:
 
 - Add and remove users, and rename them.
