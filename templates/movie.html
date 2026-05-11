@@ -15,9 +15,9 @@
     {% else %}
         <h2>{{ movie.title }}</h2>
     {% endif %}
-    {% if movie.poster_url %}
-    <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
-    {% endif %}
+    <img class="movie-poster"
+         src="{{ movie.poster_url or url_for('static', filename='default_poster.png') }}"
+         alt="{{ movie.title }} poster"/>
     {% if movie.director %}
     <p><strong>Director:</strong> {{ movie.director }}</p>
     {% endif %}

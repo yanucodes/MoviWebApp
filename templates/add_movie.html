@@ -38,7 +38,9 @@ style="text-decoration: none; color: inherit;">
         <li>
             <div class="movie" style="cursor: pointer;"
                  onclick="pickMovie({{ user.user_id }}, {{ movie.movie_id }})">
-                <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
+                <img class="movie-poster"
+                     src="{{ movie.poster_url or url_for('static', filename='default_poster.png') }}"
+                     alt="{{ movie.title }} poster"/>
                 <div class="movie-title"> {{ movie.title }}</div>
                 <div class="movie-year"> {{ movie.year }}</div>
             </div>

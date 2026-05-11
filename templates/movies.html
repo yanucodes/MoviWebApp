@@ -16,7 +16,9 @@
             <a href="{{ url_for('show_movie_details', user_id=user.user_id, movie_id=movie.movie_id) }}"
                style="text-decoration: none; color: inherit;">
                 <div class="movie">
-                    <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
+                    <img class="movie-poster"
+                         src="{{ movie.poster_url or url_for('static', filename='default_poster.png') }}"
+                         alt="{{ movie.title }} poster"/>
                     <div class="movie-title"> {{ movie.title }}</div>
                     <div class="movie-year"> {{ movie.year }}</div>
                 </div>
