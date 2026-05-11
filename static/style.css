@@ -73,6 +73,16 @@ body {
     margin-top: 7px;
 }
 
+.card form input:not([type="submit"]) {
+    font: inherit;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid #009B50;
+    border-radius: 5px;
+    background-color: #FFF;
+}
+
 .buttons {
     position: absolute;
     top: 10px;
@@ -91,7 +101,8 @@ body {
     padding: 5px 15px;
 }
 
-.button {
+.button,
+.card form input[type="submit"] {
     display: inline-block;
     box-sizing: border-box;
     border: 1px solid #009B50;
@@ -107,4 +118,13 @@ body {
     font: inherit;
     font-size: 0.85em;
     cursor: pointer;
+}
+
+.card form input[type="number"] {
+    width: auto;
+}
+
+.card form input[type="submit"] {
+    width: auto;
+    padding: 5px 15px;
 }
