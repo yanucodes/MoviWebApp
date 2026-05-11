@@ -1,9 +1,10 @@
+"""Multi-user movie favorites tracker app."""
 import sys
 from flask import Flask, request, redirect, url_for, render_template
 from werkzeug.exceptions import BadRequest, NotFound
 from api import fetch_data
 from data_manager import DataManager
-from models import db, Movie, User
+from models import db
 from config import (get_db_path, LOWEST_RATING, HIGHEST_RATING, RATING_STEP,
                     YEAR_MIN, YEAR_MAX)
 

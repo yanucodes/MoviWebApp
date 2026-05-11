@@ -84,13 +84,13 @@ class DataManager:
         return db.session.get(Movie, movie_id)
 
     def find_movie_title(self, title: str) -> int | None:
-        """Return the ID of a movie with the given title, or None.
+        """Return the ID of a movie with the given title, or ``None``.
 
         Args:
             title: Title of the movie to look up.
 
         Returns:
-            ID of the matching movie, or None if no such movie exists.
+            ID of the matching movie, or ``None`` if no such movie exists.
         """
         movie = Movie.query.filter_by(title=title).first()
         return movie.movie_id if movie else None
@@ -172,7 +172,7 @@ class DataManager:
             Movie.movie_id.notin_(favorite_ids)).all()
 
     def get_favorite_rating(self, user_id: int, movie_id: int):
-        """Return user's personal rating for a movie, or None if the
+        """Return user's personal rating for a movie, or ``None`` if the
         user has not added the movie as their favorite.
 
         Args:

@@ -5,7 +5,6 @@ from datetime import datetime
 from dotenv import load_dotenv, set_key
 
 
-# Global configuration
 RATING_STEP = 0.1
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_FILE = os.path.join(PROJECT_ROOT, ".env")
@@ -13,11 +12,9 @@ DEFAULT_DBNAME = "MoviWeb.db"
 DEFAULT_DBPATH = os.path.join(PROJECT_ROOT, "data", DEFAULT_DBNAME)
 API_URL = "http://www.omdbapi.com/"
 
-# Key names in .env
 API_ENV_KEY = "API_KEY"
 DB_ENV_KEY = "DATABASE_PATH"
 
-# Configuration for main.py
 YEAR_MIN = 1878  # The year when the first movie was made.
 YEAR_MAX = datetime.now().year
 LOWEST_RATING = 0.0
@@ -29,7 +26,7 @@ def get_api_key() -> str | None:
     Load .env file and get the API key.
 
     Returns:
-        API key or None if it is not set.
+        API key or ``None`` if it is not set.
     """
     load_dotenv()
     return os.getenv(API_ENV_KEY)

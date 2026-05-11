@@ -11,7 +11,7 @@ API_KEY = get_api_key()
 
 def fetch_data(title: str) -> dict:
     """
-    Fetch information about the movie with the title [title].
+    Fetch information about the movie with the title ``title``.
 
     Args:
         title: Search string passed to API.
