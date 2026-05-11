@@ -443,8 +443,7 @@ def update_movie(user_id, movie_id):
                                 url_for('update_movie', user_id=user_id,
                                         movie_id=movie_id))
         data_manager.update_movie_title(movie_id, new_title)
-        if new_rating is not None and data_manager.is_users_favorite(
-                user_id, movie_id):
+        if new_rating is not None:
             data_manager.update_favorite_rating(user_id, movie_id,
                                                 new_rating)
         return redirect(url_for('show_movie_details', user_id=user_id,

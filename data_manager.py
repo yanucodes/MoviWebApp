@@ -178,22 +178,30 @@ class DataManager:
                                new_rating: int):
         """Change a user's personal rating for a favorite movie.
 
+        Does nothing if the user has not added the movie as their favorite.
+
         Args:
             user_id: ID of the user.
             movie_id: ID of the movie.
             new_rating: New personal rating for the movie.
         """
         favorite = db.session.get(Favorite, (user_id, movie_id))
+        if favorite is None:
+            return
         favorite.rating = new_rating
         db.session.commit()
 
     def delete_favorite(self, user_id: int, movie_id: int):
         """Remove a movie from user's favorites.
 
+        Does nothing if the user has not added the movie as their favorite.
+
         Args:
             user_id: ID of the user.
             movie_id: ID of the movie to delete from user's favorites.
         """
         favorite = db.session.get(Favorite, (user_id, movie_id))
+        if favorite is None:
+            return
         db.session.delete(favorite)
         db.session.commit()
