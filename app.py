@@ -1,5 +1,6 @@
 import sys
 from flask import Flask, request, redirect, url_for, render_template
+from werkzeug.exceptions import BadRequest, NotFound
 from api import fetch_data
 from data_manager import DataManager
 from models import db, Movie, User
@@ -41,6 +42,68 @@ def get_num_in_range(raw: str, num_min: float | int, num_max: float | int,
     return num
 
 
+class AppBadRequest(BadRequest):
+    """400 Bad Request carrying a back URL for the error page."""
+
+    def __init__(self, message: str, back_url: str):
+        super().__init__(description=message)
+        self.back_url = back_url
+
+
+class AppNotFound(NotFound):
+    """404 Not Found carrying a back URL for the error page."""
+
+    def __init__(self, message: str, back_url: str):
+        super().__init__(description=message)
+        self.back_url = back_url
+
+
+@app.errorhandler(400)
+@app.errorhandler(404)
+def handle_app_error(error):
+    """Render error_message.html for any 400 or 404 error.
+
+    Reads ``description`` and ``back_url`` off the raised exception; falls
+    back to a generic message and the list of users for plain errors.
+    """
+    back_url = getattr(error, 'back_url', url_for('list_users'))
+    return render_template('error_message.html',
+                           message=error.description,
+                           back_url=back_url), error.code
+
+
+def abort_user_not_found(user_id: int):
+    """Raise a 404 for a missing user, linking back to the list of users.
+
+    Args:
+        user_id: ID of the user that was not found.
+    """
+    raise AppNotFound(f"User with ID {user_id} not found.",
+                      url_for('list_users'))
+
+
+def abort_movie_not_found(user_id: int, movie_id: int):
+    """Raise a 404 for a missing movie, linking back to the user's list.
+
+    Args:
+        user_id: ID of the user (used to build the back link).
+        movie_id: ID of the movie that was not found.
+    """
+    raise AppNotFound(f"Movie with ID {movie_id} not found.",
+                      url_for('list_users_movies', user_id=user_id))
+
+
+def abort_empty_field(field_name: str, back_url: str):
+    """Raise a 400 for an empty form field, linking back to ``back_url``.
+
+    Args:
+        field_name: Label of the field.
+        back_url: URL to go back to the form the user came from.
+    """
+    raise AppBadRequest(f"{field_name.capitalize()} cannot be empty.",
+                        back_url)
+
+
 @app.route('/')
 def main_page():
     """
@@ -72,7 +135,9 @@ def add_user():
     Returns:
         Redirect to the list of users.
     """
-    name = request.form['name']
+    name = request.form.get('name', '').strip()
+    if not name:
+        abort_empty_field("Name", url_for('list_users'))
     data_manager.add_user(name)
     return redirect(url_for('list_users'))
 
@@ -89,6 +154,8 @@ def show_user_settings(user_id):
         Rendered template with user's data.
     """
     user = data_manager.get_user(user_id)
+    if user is None:
+        abort_user_not_found(user_id)
     return render_template('user.html', user=user)
 
 
@@ -103,7 +170,12 @@ def update_user(user_id):
     Returns:
         Redirect to the page with user's settings.
     """
-    new_name = request.form['name']
+    if data_manager.get_user(user_id) is None:
+        abort_user_not_found(user_id)
+    new_name = request.form.get('name', '').strip()
+    if not new_name:
+        abort_empty_field("Name",
+                          url_for('show_user_settings', user_id=user_id))
     data_manager.update_users_name(user_id, new_name)
     return redirect(url_for('show_user_settings', user_id=user_id))
 
@@ -119,6 +191,8 @@ def delete_user(user_id):
     Returns:
         Redirect to the list of users.
     """
+    if data_manager.get_user(user_id) is None:
+        abort_user_not_found(user_id)
     data_manager.delete_user(user_id)
     return redirect(url_for('list_users'))
 
@@ -135,6 +209,8 @@ def list_users_movies(user_id):
         Rendered template with the list of user's favorite movies.
     """
     user = data_manager.get_user(user_id)
+    if user is None:
+        abort_user_not_found(user_id)
     movies = data_manager.get_users_favorite_movies(user_id)
     return render_template('movies.html', user=user, movies=movies,
                            lowest_rating=LOWEST_RATING,
@@ -153,14 +229,18 @@ def add_movie_by_title(user_id):
     Returns:
         Redirect to the list of user's favorite movies.
     """
+    if data_manager.get_user(user_id) is None:
+        abort_user_not_found(user_id)
     title = request.form.get('title', '').strip()
     if not title:
-        return "Bad request", 400
+        abort_empty_field("Title",
+                          url_for('list_users_movies', user_id=user_id))
     try:
         rating = get_num_in_range(request.form.get('rating', ''),
-                                  LOWEST_RATING, HIGHEST_RATING, 'rating')
-    except ValueError:
-        return "Bad rating", 400
+                                  LOWEST_RATING, HIGHEST_RATING, 'Rating')
+    except ValueError as error:
+        raise AppBadRequest(str(error),
+                            url_for('list_users_movies', user_id=user_id))
 
     movie_data = fetch_data(title)
     if movie_data.get("Response") != "True":
@@ -170,7 +250,7 @@ def add_movie_by_title(user_id):
         new_title = movie_data["Title"]
         director = movie_data["Director"]
         year = get_num_in_range(movie_data["Year"], YEAR_MIN, YEAR_MAX,
-                                'year')
+                                'Year')
         imdb_rating = get_num_in_range(movie_data["imdbRating"],
                                        LOWEST_RATING, HIGHEST_RATING,
                                        'IMDb rating')
@@ -202,7 +282,7 @@ def add_movie_form(user_id):
     """
     user = data_manager.get_user(user_id)
     if user is None:
-        return "User not found", 404
+        abort_user_not_found(user_id)
     catalog = data_manager.get_movies()
     return render_template('add_movie.html', user=user, movies=catalog,
                            prefilled_title=request.args.get('title', ''),
@@ -223,21 +303,25 @@ def add_movie_manually(user_id):
     Returns:
         Redirect to the list of user's favorite movies.
     """
+    if data_manager.get_user(user_id) is None:
+        abort_user_not_found(user_id)
     title = request.form.get('title', '').strip()
     if not title:
-        return "Bad request", 400
+        abort_empty_field("Title",
+                          url_for('add_movie_form', user_id=user_id))
     director = request.form.get('director', '').strip() or None
     poster_url = request.form.get('poster_url', '').strip() or None
     try:
         year = get_num_in_range(request.form.get('year', ''),
-                                YEAR_MIN, YEAR_MAX, 'year')
+                                YEAR_MIN, YEAR_MAX, 'Year')
         imdb_rating = get_num_in_range(request.form.get('imdb_rating', ''),
                                        LOWEST_RATING, HIGHEST_RATING,
                                        'IMDb rating')
         rating = get_num_in_range(request.form.get('rating', ''),
-                                  LOWEST_RATING, HIGHEST_RATING, 'rating')
-    except ValueError:
-        return "Bad input", 400
+                                  LOWEST_RATING, HIGHEST_RATING, 'Rating')
+    except ValueError as error:
+        raise AppBadRequest(str(error),
+                            url_for('add_movie_form', user_id=user_id))
 
     new_movie = data_manager.add_movie(title, director, year, imdb_rating,
                                        poster_url)
@@ -252,16 +336,21 @@ def add_existing_movie(user_id, movie_id):
 
     Args:
         user_id: ID of the user.
-        movie_id: ID of the book.
+        movie_id: ID of the movie.
 
     Returns:
         Redirect to the list of user's favorite movies.
     """
+    if data_manager.get_user(user_id) is None:
+        abort_user_not_found(user_id)
+    if data_manager.get_movie(movie_id) is None:
+        abort_movie_not_found(user_id, movie_id)
     try:
         rating = get_num_in_range(request.form.get('rating', ''),
-                                  LOWEST_RATING, HIGHEST_RATING, 'rating')
-    except ValueError:
-        return "Bad rating", 400
+                                  LOWEST_RATING, HIGHEST_RATING, 'Rating')
+    except ValueError as error:
+        raise AppBadRequest(str(error),
+                            url_for('add_movie_form', user_id=user_id))
     data_manager.add_favorite(user_id, movie_id, rating)
     return redirect(url_for('list_users_movies', user_id=user_id))
 
@@ -273,13 +362,17 @@ def show_movie_details(user_id, movie_id):
 
     Args:
         user_id: ID of the user.
-        movie_id: ID of the book.
+        movie_id: ID of the movie.
 
     Returns:
         Rendered movie.html template.
     """
     user = data_manager.get_user(user_id)
+    if user is None:
+        abort_user_not_found(user_id)
     movie = data_manager.get_movie(movie_id)
+    if movie is None:
+        abort_movie_not_found(user_id, movie_id)
     rating = data_manager.get_favorite_rating(user_id, movie_id)
     return render_template('movie.html', user=user, movie=movie,
                            rating=rating, update=False)
@@ -297,14 +390,22 @@ def update_movie(user_id, movie_id):
 
     Args:
         user_id: ID of the user.
-        movie_id: ID of the book.
+        movie_id: ID of the movie.
 
     Returns:
         Rendered movie.html template (GET), redirect to the page with movie
         details (POST).
     """
+    if data_manager.get_user(user_id) is None:
+        abort_user_not_found(user_id)
+    if data_manager.get_movie(movie_id) is None:
+        abort_movie_not_found(user_id, movie_id)
     if request.method == 'POST':
-        new_title = request.form['title']
+        new_title = request.form.get('title', '').strip()
+        if not new_title:
+            abort_empty_field("Title",
+                              url_for('update_movie', user_id=user_id,
+                                      movie_id=movie_id))
         data_manager.update_movie_title(movie_id, new_title)
         return redirect(url_for('show_movie_details', user_id=user_id,
                                 movie_id=movie_id))
@@ -323,11 +424,15 @@ def delete_movie_from_favorites(user_id, movie_id):
 
     Args:
         user_id: ID of the user.
-        movie_id: ID of the book.
+        movie_id: ID of the movie.
 
     Returns:
         Redirect to the list of user's favorite movies.
     """
+    if data_manager.get_user(user_id) is None:
+        abort_user_not_found(user_id)
+    if data_manager.get_movie(movie_id) is None:
+        abort_movie_not_found(user_id, movie_id)
     data_manager.delete_favorite(user_id, movie_id)
     return redirect(url_for('list_users_movies', user_id=user_id))
 
