@@ -396,10 +396,13 @@ def update_movie(user_id, movie_id):
         Rendered movie.html template (GET), redirect to the page with movie
         details (POST).
     """
-    if data_manager.get_user(user_id) is None:
+    user = data_manager.get_user(user_id)
+    if user is None:
         abort_user_not_found(user_id)
-    if data_manager.get_movie(movie_id) is None:
+    movie = data_manager.get_movie(movie_id)
+    if movie is None:
         abort_movie_not_found(user_id, movie_id)
+    rating = data_manager.get_favorite_rating(user_id, movie_id)
     if request.method == 'POST':
         new_title = request.form.get('title', '').strip()
         if not new_title:
@@ -407,13 +410,24 @@ def update_movie(user_id, movie_id):
                               url_for('update_movie', user_id=user_id,
                                       movie_id=movie_id))
         data_manager.update_movie_title(movie_id, new_title)
+        try:
+            new_rating = get_num_in_range(request.form.get('rating', ''),
+                                          LOWEST_RATING, HIGHEST_RATING,
+                                          'Rating')
+        except ValueError as error:
+            raise AppBadRequest(str(error),
+                                url_for('update_movie', user_id=user_id,
+                                        movie_id=movie_id))
+        if new_rating is not None:
+            data_manager.update_favorite_rating(user_id, movie_id,
+                                                new_rating)
         return redirect(url_for('show_movie_details', user_id=user_id,
                                 movie_id=movie_id))
-    user = data_manager.get_user(user_id)
-    movie = data_manager.get_movie(movie_id)
-    rating = data_manager.get_favorite_rating(user_id, movie_id)
     return render_template('movie.html', user=user, movie=movie,
-                           rating=rating, update=True)
+                           rating=rating, update=True,
+                           lowest_rating=LOWEST_RATING,
+                           highest_rating=HIGHEST_RATING,
+                           rating_step=RATING_STEP)
 
 
 @app.route('/users/<int:user_id>/movies/<int:movie_id>/delete',
