@@ -244,6 +244,8 @@ def add_movie_by_title(user_id):
 
     movie_data = fetch_data(title)
     if movie_data.get("Response") != "True":
+        print(f"Could not fetch data for the movie {title}:"
+              f" {movie_data.get('Error', '')}", file=sys.stderr)
         return redirect(url_for('add_movie_form', user_id=user_id,
                                 title=title))
     try:

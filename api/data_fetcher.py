@@ -7,12 +7,6 @@ from config import API_URL, get_api_key
 
 
 API_KEY = get_api_key()
-AUTHORIZATION_FAILED_MESSAGE = """
-Authorization failed. Either API key was not set up or is invalid.
-  Please run:
-      python setup.py
-  to set up your API key.
-"""
 
 
 def fetch_data(title: str) -> dict:
@@ -23,14 +17,17 @@ def fetch_data(title: str) -> dict:
         title: Search string passed to API.
 
     Returns:
-        Dictionary with the information about the movie.
+        Dictionary with the information about the movie. On failure,
+        returns a dict shaped like an OMDb error response:
+        ``{"Response": "False", "Error": <message>}``.
     """
-    result = requests.get(f"{API_URL}?apikey={API_KEY}&t={title}",
-                          timeout=30)
-    if result.status_code == 200:
+    try:
+        result = requests.get(API_URL,
+                              params={"apikey": API_KEY, "t": title},
+                              timeout=30)
+        result.raise_for_status()
         return result.json()
-    if result.status_code == 401:
-        print(AUTHORIZATION_FAILED_MESSAGE)
-        return {"Response": "False", "Error": ""}
-    return {"Response": "False", "Error": "Server error. Status code "
-            f"{result.status_code}."}
+    except requests.RequestException as error:
+        return {"Response": "False", "Error": f"Network error: {error}"}
+    except ValueError:
+        return {"Response": "False", "Error": "Invalid response from OMDb."}
