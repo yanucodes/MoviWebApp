@@ -333,9 +333,18 @@ def add_movie_manually(user_id):
         raise AppBadRequest(str(error),
                             url_for('add_movie_form', user_id=user_id))
 
-    new_movie = data_manager.add_movie(title, director, year, imdb_rating,
-                                       poster_url)
-    data_manager.add_favorite(user_id, new_movie.movie_id, rating)
+    existing_id = data_manager.find_movie_title(title)
+    if existing_id is not None:
+        if data_manager.is_users_favorite(user_id, existing_id):
+            raise AppBadRequest(
+                f"Movie with title \"{title}\" is already in your"
+                f" list of favorite movies.",
+                url_for('list_users_movies', user_id=user_id))
+        data_manager.add_favorite(user_id, existing_id, rating)
+    else:
+        new_movie = data_manager.add_movie(title, director, year, imdb_rating,
+                                           poster_url)
+        data_manager.add_favorite(user_id, new_movie.movie_id, rating)
     return redirect(url_for('list_users_movies', user_id=user_id))
 
 
@@ -353,7 +362,8 @@ def add_existing_movie(user_id, movie_id):
     """
     if data_manager.get_user(user_id) is None:
         abort_user_not_found(user_id)
-    if data_manager.get_movie(movie_id) is None:
+    movie = data_manager.get_movie(movie_id)
+    if movie is None:
         abort_movie_not_found(user_id, movie_id)
     try:
         rating = get_num_in_range(request.form.get('rating', ''),
@@ -361,6 +371,11 @@ def add_existing_movie(user_id, movie_id):
     except ValueError as error:
         raise AppBadRequest(str(error),
                             url_for('add_movie_form', user_id=user_id))
+    if data_manager.is_users_favorite(user_id, movie_id):
+        raise AppBadRequest(
+            f"Movie with title \"{movie.title}\" is already in your"
+            f" list of favorite movies.",
+            url_for('list_users_movies', user_id=user_id))
     data_manager.add_favorite(user_id, movie_id, rating)
     return redirect(url_for('list_users_movies', user_id=user_id))
 
