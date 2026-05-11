@@ -42,6 +42,17 @@ def get_num_in_range(raw: str, num_min: float | int, num_max: float | int,
 
 
 @app.route('/')
+def main_page():
+    """
+    Main page.
+
+    Returns:
+        Redirect to the list of users.
+    """
+    return redirect(url_for('list_users'))
+
+
+@app.route('/users')
 def list_users():
     """
     Show the list of all users.
