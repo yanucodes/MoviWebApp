@@ -130,6 +130,18 @@ class DataManager:
         favorites = Favorite.query.filter_by(user_id=user_id).all()
         return [favorite.movie for favorite in favorites]
 
+    def get_users_nonfavorites(self, user_id: int) -> list:
+        """Return the list of ``Movie`` objects the user has not yet added
+        as their favorite.
+
+        Args:
+            user_id: ID of the user.
+        """
+        favorite_ids = [favorite.movie_id for favorite in
+                        Favorite.query.filter_by(user_id=user_id).all()]
+        return Movie.query.filter(
+            Movie.movie_id.notin_(favorite_ids)).all()
+
     def get_favorite_rating(self, user_id: int, movie_id: int):
         """Return user's personal rating for a movie selected by user's and
         movies's ID."""

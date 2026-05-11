@@ -283,7 +283,7 @@ def add_movie_form(user_id):
     user = data_manager.get_user(user_id)
     if user is None:
         abort_user_not_found(user_id)
-    catalog = data_manager.get_movies()
+    catalog = data_manager.get_users_nonfavorites(user_id)
     return render_template('add_movie.html', user=user, movies=catalog,
                            prefilled_title=request.args.get('title', ''),
                            lowest_rating=LOWEST_RATING,

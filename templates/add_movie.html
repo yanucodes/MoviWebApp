@@ -5,8 +5,8 @@
     <h1>{{ user.name }}'s favorite movies</h1>
 </div>
 <div class="card" style="margin-bottom: 0;">
-    <h2>Search for movie data was unsuccessful. Add new movie manually
-        or select an existing one below:</h2>
+    <h2>Search for movie data was unsuccessful. Add new movie manually{% if movies %}
+        or select an existing one below{% endif %}:</h2>
     <form action="{{ url_for('add_movie_manually', user_id=user.user_id) }}" method="post">
         <div>
             <label for="title"><strong>Title:</strong></label>
@@ -25,6 +25,7 @@
         <input type="submit" value="Submit">
     </form>
 </div>
+{% if movies %}
 <div>
     <ol class="movie-grid">
         {% for movie in movies %}
@@ -39,6 +40,7 @@
         {% endfor %}
     </ol>
 </div>
+{% endif %}
 <script>
 function pickMovie(userId, movieId) {
     var rating = prompt("Your rating (optional, leave blank to skip):", "");
