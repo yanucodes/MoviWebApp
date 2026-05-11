@@ -56,6 +56,14 @@ class Movie(db.Model):
         ratings = [f.rating for f in self.favorites if f.rating is not None]
         return mean(ratings) if ratings else None
 
+    @property
+    def number_of_ratings(self):
+        """Number of MoviWebApp users that have rated this movie.
+
+        Favorites without a specified rating are skipped.
+        """
+        return sum(1 for f in self.favorites if f.rating is not None)
+
 
 class Favorite(db.Model):
     """Link between a ``User`` and a ``Movie`` they have favorited.

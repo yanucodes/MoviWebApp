@@ -22,7 +22,7 @@
                     <div class="movie-title"> {{ movie.title }}</div>
                     <div class="movie-year"> {{ movie.year }}</div>
                     {% if movie.average_rating is not none %}
-                    <div class="movie-rating">⭐ {{ "%.1f"|format(movie.average_rating) }}</div>
+                    <div class="movie-rating">⭐ {{ "%.1f"|format(movie.average_rating) }} ({{ movie.number_of_ratings }})</div>
                     {% endif %}
                 </div>
             </a>
@@ -42,4 +42,10 @@
         <input type="submit" value="Submit">
     </form>
 </div>
+<a href="{{ url_for('add_movie_form', user_id=user.user_id) }}"
+   style="text-decoration: none; color: inherit;">
+    <div class="card" style="margin-bottom: 0;">
+        <h2>Show more adding options</h2>
+    </div>
+</a>
 {% endblock %}

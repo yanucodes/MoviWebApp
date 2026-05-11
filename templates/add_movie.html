@@ -11,7 +11,7 @@ style="text-decoration: none; color: inherit;">
 </div>
 </a>
 <div class="card" style="margin-bottom: 0;">
-    <h2>Search for movie data was unsuccessful. Add new movie manually{% if movies %}
+    <h2>{% if prefilled_title %}Search for movie data was unsuccessful. {% endif %}Add new movie manually{% if movies %}
         or select an existing one below{% endif %}:</h2>
     <form action="{{ url_for('add_movie_manually', user_id=user.user_id) }}" method="post">
         <div>
@@ -44,7 +44,7 @@ style="text-decoration: none; color: inherit;">
                 <div class="movie-title"> {{ movie.title }}</div>
                 <div class="movie-year"> {{ movie.year }}</div>
                 {% if movie.average_rating is not none %}
-                <div class="movie-rating">⭐ {{ "%.1f"|format(movie.average_rating) }}</div>
+                <div class="movie-rating">⭐ {{ "%.1f"|format(movie.average_rating) }} ({{ movie.number_of_ratings }})</div>
                 {% endif %}
             </div>
         </li>
