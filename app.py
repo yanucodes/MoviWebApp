@@ -43,12 +43,24 @@ def get_num_in_range(raw: str, num_min: float | int, num_max: float | int,
 
 @app.route('/')
 def list_users():
+    """
+    Show the list of all users.
+
+    Returns:
+        Rendered index.html template with the list of users.
+    """
     users = data_manager.get_users()
     return render_template('index.html', users=users)
 
 
 @app.route('/users', methods=['POST'])
 def add_user():
+    """
+    Add a new user to the database.
+
+    Returns:
+        Redirect to the list of users.
+    """
     name = request.form['name']
     data_manager.add_user(name)
     return redirect(url_for('list_users'))
@@ -56,12 +68,30 @@ def add_user():
 
 @app.route('/users/<int:user_id>', methods=['GET'])
 def show_user_settings(user_id):
+    """
+    Show user's profile and settings.
+
+    Args:
+        user_id: ID of the user.
+
+    Returns:
+        Rendered template with user's data.
+    """
     user = data_manager.get_user(user_id)
     return render_template('user.html', user=user)
 
 
 @app.route('/users/<int:user_id>/update', methods=['POST'])
 def update_user(user_id):
+    """
+    Update user's name in the database.
+
+    Args:
+        user_id: ID of the user.
+
+    Returns:
+        Redirect to the page with user's settings.
+    """
     new_name = request.form['name']
     data_manager.update_users_name(user_id, new_name)
     return redirect(url_for('show_user_settings', user_id=user_id))
@@ -69,12 +99,30 @@ def update_user(user_id):
 
 @app.route('/users/<int:user_id>/delete', methods=['POST'])
 def delete_user(user_id):
+    """
+    Delete user from the database.
+
+    Args:
+        user_id: ID of the user.
+
+    Returns:
+        Redirect to the list of users.
+    """
     data_manager.delete_user(user_id)
     return redirect(url_for('list_users'))
 
 
 @app.route('/users/<int:user_id>/movies', methods=['GET'])
 def list_users_movies(user_id):
+    """
+    Show the grid with user's favorite movies.
+
+    Args:
+        user_id: ID of the user.
+
+    Returns:
+        Rendered template with the list of user's favorite movies.
+    """
     user = data_manager.get_user(user_id)
     movies = data_manager.get_users_favorite_movies(user_id)
     return render_template('movies.html', user=user, movies=movies,
@@ -85,6 +133,15 @@ def list_users_movies(user_id):
 
 @app.route('/users/<int:user_id>/movies', methods=['POST'])
 def add_movie_by_title(user_id):
+    """
+    Add movie by its title. Fetch missing information from OMDB API.
+
+    Args:
+        user_id: ID of the user.
+
+    Returns:
+        Redirect to the list of user's favorite movies.
+    """
     title = request.form.get('title', '').strip()
     if not title:
         return "Bad request", 400
@@ -121,6 +178,17 @@ def add_movie_by_title(user_id):
 
 @app.route('/users/<int:user_id>/add_movie', methods=['GET'])
 def add_movie_form(user_id):
+    """
+    Show a form to add a new movie manually or by selecting an existing
+    movie in the database.
+
+    Args:
+        user_id: ID of the user.
+
+    Returns:
+        Rendered template with the form to add a new movie and a grid of
+        movies in the database.
+    """
     user = data_manager.get_user(user_id)
     if user is None:
         return "User not found", 404
@@ -135,6 +203,15 @@ def add_movie_form(user_id):
 
 @app.route('/users/<int:user_id>/add_movie', methods=['POST'])
 def add_movie_manually(user_id):
+    """
+    Add a new movie to the database and to users favorite.
+
+    Args:
+        user_id: ID of the user.
+
+    Returns:
+        Redirect to the list of user's favorite movies.
+    """
     title = request.form.get('title', '').strip()
     if not title:
         return "Bad request", 400
@@ -159,6 +236,16 @@ def add_movie_manually(user_id):
 
 @app.route('/users/<int:user_id>/movies/<int:movie_id>', methods=['POST'])
 def add_existing_movie(user_id, movie_id):
+    """
+    Add a movie from the database to user's favorite movies.
+
+    Args:
+        user_id: ID of the user.
+        movie_id: ID of the book.
+
+    Returns:
+        Redirect to the list of user's favorite movies.
+    """
     try:
         rating = get_num_in_range(request.form.get('rating', ''),
                                   LOWEST_RATING, HIGHEST_RATING, 'rating')
@@ -170,6 +257,16 @@ def add_existing_movie(user_id, movie_id):
 
 @app.route('/users/<int:user_id>/movies/<int:movie_id>', methods=['GET'])
 def show_movie_details(user_id, movie_id):
+    """
+    Show details about the movie and user's rating for that movie if available.
+
+    Args:
+        user_id: ID of the user.
+        movie_id: ID of the book.
+
+    Returns:
+        Rendered movie.html template.
+    """
     user = data_manager.get_user(user_id)
     movie = data_manager.get_movie(movie_id)
     rating = data_manager.get_favorite_rating(user_id, movie_id)
@@ -180,6 +277,21 @@ def show_movie_details(user_id, movie_id):
 @app.route('/users/<int:user_id>/movies/<int:movie_id>/update',
            methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
+    """
+    Show the form to update a movie pre-filled with existing data and handle
+    submission.
+
+    On GET: render the form pre-filled with the movie's current data.
+    On POST: save the updated movie and redirect to the homepage.
+
+    Args:
+        user_id: ID of the user.
+        movie_id: ID of the book.
+
+    Returns:
+        Rendered movie.html template (GET), redirect to the page with movie
+        details (POST).
+    """
     if request.method == 'POST':
         new_title = request.form['title']
         data_manager.update_movie_title(movie_id, new_title)
@@ -195,6 +307,16 @@ def update_movie(user_id, movie_id):
 @app.route('/users/<int:user_id>/movies/<int:movie_id>/delete',
            methods=['POST'])
 def delete_movie_from_favorites(user_id, movie_id):
+    """
+    Delete the movie with the given ID from user's favorites.
+
+    Args:
+        user_id: ID of the user.
+        movie_id: ID of the book.
+
+    Returns:
+        Redirect to the list of user's favorite movies.
+    """
     data_manager.delete_favorite(user_id, movie_id)
     return redirect(url_for('list_users_movies', user_id=user_id))
 
