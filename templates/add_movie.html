@@ -4,6 +4,12 @@
 <div class="list-movies-title">
     <h1>{{ user.name }}'s favorite movies</h1>
 </div>
+<a href="{{ url_for('list_users_movies', user_id=user.user_id) }}"
+style="text-decoration: none; color: inherit;">
+<div class="card" style="margin-bottom: 0;">
+    <h2>Go back</h2>
+</div>
+</a>
 <div class="card" style="margin-bottom: 0;">
     <h2>Search for movie data was unsuccessful. Add new movie manually{% if movies %}
         or select an existing one below{% endif %}:</h2>
