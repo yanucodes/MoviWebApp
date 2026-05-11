@@ -15,7 +15,8 @@
     </form>
     <div class="buttons">
         <form action="{{ url_for('delete_user', user_id=user.user_id) }}" method="post">
-            <button type="submit" class="button">Delete account</button>
+            <button type="submit" class="button"
+                    onclick="return confirm('Delete this account? This cannot be undone.')">Delete account</button>
         </form>
     </div>
 </div>
