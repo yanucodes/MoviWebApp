@@ -248,22 +248,32 @@ def add_movie_by_title(user_id):
                                 title=title))
     try:
         new_title = movie_data["Title"]
-        director = movie_data["Director"]
-        year = get_num_in_range(movie_data["Year"], YEAR_MIN, YEAR_MAX,
-                                'Year')
-        imdb_rating = get_num_in_range(movie_data["imdbRating"],
-                                       LOWEST_RATING, HIGHEST_RATING,
-                                       'IMDb rating')
-        poster_url = movie_data["Poster"]
+        existing_id = data_manager.find_movie_title(new_title)
+        if existing_id is None:
+            director = movie_data["Director"]
+            year = get_num_in_range(movie_data["Year"], YEAR_MIN, YEAR_MAX,
+                                    'Year')
+            imdb_rating = get_num_in_range(movie_data["imdbRating"],
+                                           LOWEST_RATING, HIGHEST_RATING,
+                                           'IMDb rating')
+            poster_url = movie_data["Poster"]
     except (KeyError, ValueError):
         print(f"Failed to interpret data for the movie {title}.",
               file=sys.stderr)
         return redirect(url_for('add_movie_form', user_id=user_id,
                                 title=title))
 
-    new_movie = data_manager.add_movie(new_title, director, year,
-                                       imdb_rating, poster_url)
-    data_manager.add_favorite(user_id, new_movie.movie_id, rating)
+    if existing_id is not None:
+        if data_manager.is_users_favorite(user_id, existing_id):
+            raise AppBadRequest(
+                f"Movie with title \"{new_title}\" is already in your"
+                f" list of favorite movies.",
+                url_for('list_users_movies', user_id=user_id))
+        data_manager.add_favorite(user_id, existing_id, rating)
+    else:
+        new_movie = data_manager.add_movie(new_title, director, year,
+                                           imdb_rating, poster_url)
+        data_manager.add_favorite(user_id, new_movie.movie_id, rating)
     return redirect(url_for('list_users_movies', user_id=user_id))
 
 

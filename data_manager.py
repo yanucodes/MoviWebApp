@@ -79,6 +79,18 @@ class DataManager:
         """Return movie by given ID."""
         return db.session.get(Movie, movie_id)
 
+    def find_movie_title(self, title: str) -> int | None:
+        """Return the ID of a movie with the given title, or None.
+
+        Args:
+            title: Title of the movie to look up.
+
+        Returns:
+            ID of the matching movie, or None if no such movie exists.
+        """
+        movie = Movie.query.filter_by(title=title).first()
+        return movie.movie_id if movie else None
+
     def update_movie_title(self, movie_id: int, new_title: str):
         """Change the title of an existing movie.
 
@@ -119,6 +131,15 @@ class DataManager:
         db.session.add(favorite)
         db.session.commit()
         return favorite
+
+    def is_users_favorite(self, user_id: int, movie_id: int) -> bool:
+        """Return whether the user has the given movie as their favorite.
+
+        Args:
+            user_id: ID of the user.
+            movie_id: ID of the movie.
+        """
+        return db.session.get(Favorite, (user_id, movie_id)) is not None
 
     def get_users_favorite_movies(self, user_id: int) -> list:
         """Return the list of ``Movie`` objects a user has added as their
