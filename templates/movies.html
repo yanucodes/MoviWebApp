@@ -21,6 +21,9 @@
                          alt="{{ movie.title }} poster"/>
                     <div class="movie-title"> {{ movie.title }}</div>
                     <div class="movie-year"> {{ movie.year }}</div>
+                    {% if movie.average_rating is not none %}
+                    <div class="movie-rating">⭐ {{ "%.1f"|format(movie.average_rating) }}</div>
+                    {% endif %}
                 </div>
             </a>
         </li>
