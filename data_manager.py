@@ -164,10 +164,15 @@ class DataManager:
             Movie.movie_id.notin_(favorite_ids)).all()
 
     def get_favorite_rating(self, user_id: int, movie_id: int):
-        """Return user's personal rating for a movie selected by user's and
-        movies's ID."""
+        """Return user's personal rating for a movie, or None if the
+        user has not added the movie as their favorite.
+
+        Args:
+            user_id: ID of the user.
+            movie_id: ID of the movie.
+        """
         favorite = db.session.get(Favorite, (user_id, movie_id))
-        return favorite.rating
+        return favorite.rating if favorite else None
 
     def update_favorite_rating(self, user_id: int, movie_id: int,
                                new_rating: int):
